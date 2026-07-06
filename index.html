@@ -1,103 +1,132 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Post-it AR Pro - Solo Etiquetas Fijas</title>
-    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-    <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
-    <style>
-      #counter { 
-        position: fixed; 
-        top: 15px; 
-        left: 50%; 
-        transform: translateX(-50%); 
-        z-index: 1000; 
-        background: rgba(0,0,0,0.6); 
-        color: white; 
-        padding: 6px 14px; 
-        border-radius: 20px; 
-        font-family: sans-serif; 
-        font-size: 14px; 
-      }
-    </style>
-  </head>
-  <body style="margin: 0; overflow: hidden;">
 
-    <div id="counter">0 etiquetas</div>
+<head>
+  <title>Post-it AR Pro - Solo Etiquetas Fijas</title>
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
+  <style>
+    #counter {
+      position: fixed;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-family: sans-serif;
+      font-size: 14px;
+    }
+  </style>
+</head>
 
-    <script>
-      const app = {
-        // --- DEFINE AQUÍ TUS ETIQUETAS Y SUS POSICIONES POR CÓDIGO ---
-        notes: [
-          { id: '1', text: 'Estación 1: Control', color: '#FFEB3B', pos: { x: -1.5, y: 0.5, z: -1 } },
-          { id: '2', text: 'Estación 2: Filtros', color: '#40C4FF', pos: { x: 0, y: 0.5, z: -1.5 } },
-          { id: '3', text: 'Estación 3: Salida', color: '#69F0AE', pos: { x: 1.5, y: 0.5, z: -1 } }
-        ],
-        
-        marker: null,
-        WRAP_COUNT: 18, 
+<body style="margin: 0; overflow: hidden;">
 
-        init: function() {
-          this.marker = document.querySelector('#ancla');
-          this.marker.addEventListener('markerFound', () => this.render());
-          this.updateCounter();
-          this.render(); // Renderizado inicial en caso de que ya esté en pantalla
+  <div id="counter">0 etiquetas</div>
+
+  <script>
+    const app = {
+      // --- DEFINE AQUÍ TUS ETIQUETAS Y SUS POSICIONES POR CÓDIGO ---
+      notes: [
+        {
+          "id": "1",
+          "text": "Estación 1: Control",
+          "color": "#FFEB3B",
+          "pos": {
+            "x": -1.5,
+            "y": 0.5,
+            "z": -1
+          }
         },
-
-        // Estima cuántas líneas ocupará el texto para dimensionar la etiqueta
-        estimateSize: function(text) {
-          const charsPerLine = this.WRAP_COUNT;
-          const lines = Math.max(1, Math.ceil(text.length / charsPerLine));
-          const width = 1.375;
-          const height = Math.min(2.2, Math.max(0.875, 0.45 + lines * 0.24));
-          return { width, height, lines };
+        {
+          "id": "2",
+          "text": "Estación 2: Filtros",
+          "color": "#40C4FF",
+          "pos": {
+            "x": 0,
+            "y": 0.5,
+            "z": -1.5
+          }
         },
-
-        updateCounter: function() {
-          document.getElementById('counter').textContent = `${this.notes.length} etiquetas`;
-        },
-
-        render: function() {
-          // Limpiar etiquetas virtuales previas
-          const oldNotes = this.marker.querySelectorAll('.nota-virtual');
-          oldNotes.forEach(n => n.parentNode.removeChild(n));
-
-          this.notes.forEach(data => {
-            const size = this.estimateSize(data.text);
-
-            const container = document.createElement('a-entity');
-            container.setAttribute('class', 'nota-virtual');
-            // Convertimos el objeto pos {x, y, z} a un string compatible con A-Frame "x y z"
-            container.setAttribute('position', `${data.pos.x} ${data.pos.y} ${data.pos.z}`);
-            container.setAttribute('look-at', '[camera]');
-
-            const bg = document.createElement('a-plane');
-            bg.setAttribute('width', size.width);
-            bg.setAttribute('height', size.height);
-            bg.setAttribute('color', data.color);
-            bg.setAttribute('material', 'shader: flat; side: double');
-
-            const txt = document.createElement('a-text');
-            txt.setAttribute('value', data.text);
-            txt.setAttribute('align', 'center');
-            txt.setAttribute('baseline', 'center');
-            txt.setAttribute('color', '#000');
-            txt.setAttribute('width', size.width * 2.7);
-            txt.setAttribute('wrap-count', this.WRAP_COUNT);
-            txt.setAttribute('position', '0 0 0.01');
-
-            container.appendChild(bg);
-            container.appendChild(txt);
-            this.marker.appendChild(container);
-          });
+        {
+          "id": "3",
+          "text": "Estación 3: Salida",
+          "color": "#69F0AE",
+          "pos": {
+            "x": 1.5,
+            "y": 0.5,
+            "z": -1
+          }
         }
-      };
+      ]
 
-      window.onload = () => app.init();
-    </script>
+               
+        marker: null,
+      WRAP_COUNT: 18,
 
-    <a-scene embedded 
-             arjs="sourceType: webcam; 
+      init: function () {
+        this.marker = document.querySelector('#ancla');
+        this.marker.addEventListener('markerFound', () => this.render());
+        this.updateCounter();
+        this.render(); // Renderizado inicial en caso de que ya esté en pantalla
+      },
+
+      // Estima cuántas líneas ocupará el texto para dimensionar la etiqueta
+      estimateSize: function (text) {
+        const charsPerLine = this.WRAP_COUNT;
+        const lines = Math.max(1, Math.ceil(text.length / charsPerLine));
+        const width = 1.375;
+        const height = Math.min(2.2, Math.max(0.875, 0.45 + lines * 0.24));
+        return { width, height, lines };
+      },
+
+      updateCounter: function () {
+        document.getElementById('counter').textContent = `${this.notes.length} etiquetas`;
+      },
+
+      render: function () {
+        // Limpiar etiquetas virtuales previas
+        const oldNotes = this.marker.querySelectorAll('.nota-virtual');
+        oldNotes.forEach(n => n.parentNode.removeChild(n));
+
+        this.notes.forEach(data => {
+          const size = this.estimateSize(data.text);
+
+          const container = document.createElement('a-entity');
+          container.setAttribute('class', 'nota-virtual');
+          // Convertimos el objeto pos {x, y, z} a un string compatible con A-Frame "x y z"
+          container.setAttribute('position', `${data.pos.x} ${data.pos.y} ${data.pos.z}`);
+          container.setAttribute('look-at', '[camera]');
+
+          const bg = document.createElement('a-plane');
+          bg.setAttribute('width', size.width);
+          bg.setAttribute('height', size.height);
+          bg.setAttribute('color', data.color);
+          bg.setAttribute('material', 'shader: flat; side: double');
+
+          const txt = document.createElement('a-text');
+          txt.setAttribute('value', data.text);
+          txt.setAttribute('align', 'center');
+          txt.setAttribute('baseline', 'center');
+          txt.setAttribute('color', '#000');
+          txt.setAttribute('width', size.width * 2.7);
+          txt.setAttribute('wrap-count', this.WRAP_COUNT);
+          txt.setAttribute('position', '0 0 0.01');
+
+          container.appendChild(bg);
+          container.appendChild(txt);
+          this.marker.appendChild(container);
+        });
+      }
+    };
+
+    window.onload = () => app.init();
+  </script>
+
+  <a-scene embedded arjs="sourceType: webcam; 
                    sourceWidth:1280; sourceHeight:960; 
                    displayWidth: 1280; displayHeight: 960;
                    debugUIEnabled: false; 
@@ -105,13 +134,14 @@
                    matrixCodeType: 3x3;
                    imageSmoothingEnabled: false;
                    canvasWidth: 1280; canvasHeight: 960;">
-      
-      <a-marker preset="hiro" id="ancla" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
-          <a-sphere radius="0.0625" color="red"></a-sphere>
-          <a-plane rotation="-90 0 0" width="6.25" height="6.25" color="#fff" opacity="0.1"></a-plane>
-      </a-marker>
-      
-      <a-entity camera></a-entity>
-    </a-scene>
-  </body>
+
+    <a-marker preset="hiro" id="ancla" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+      <a-sphere radius="0.0625" color="red"></a-sphere>
+      <a-plane rotation="-90 0 0" width="6.25" height="6.25" color="#fff" opacity="0.1"></a-plane>
+    </a-marker>
+
+    <a-entity camera></a-entity>
+  </a-scene>
+</body>
+
 </html>
